@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace WebApi;
 
@@ -8,10 +9,12 @@ public class WebServer
 {
     private HttpListener _httpListener;
     private List<Route> _routes;
+    private Func<Response> _notFoundCallback;
 
     public WebServer()
     {
         _routes = new List<Route>();
+        _notFoundCallback = () => new Response(404, "<html><body>404</body></html>");
     }
 
     public void Get(String slug, Func<Response> callback)
@@ -46,6 +49,11 @@ public class WebServer
         Put(slug, callback);
     }
 
+    public void NotFound(Func<Response> notFoundCallback)
+    {
+        _notFoundCallback = notFoundCallback;
+    }
+
     public void Listen(int port)
     {
         using (_httpListener = new HttpListener())
@@ -57,22 +65,25 @@ public class WebServer
             {
                 // Note: The GetContext method blocks while waiting for a request
                 HttpListenerContext context = _httpListener.GetContext();
-                HttpListenerRequest request = context.Request;
-                // Obtain a response object.
-                HttpListenerResponse response = context.Response;
-                // Get user response 
-                Response userResponse = (GetRoute(request.HttpMethod, request.RawUrl))();
-                // Set user status code
-                response.StatusCode = userResponse.GetStatusCode();
-                // Set user response text
-                string responseString = userResponse.GetResponseText();
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                // Get a response stream and write the response to it.
-                response.ContentLength64 = buffer.Length;
-                System.IO.Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-                // You must close the output stream.
-                output.Close();
+                // If connection has been found, set connection on a thread from the thread pool and handle the response. 
+                ThreadPool.QueueUserWorkItem(state => { 
+                    HttpListenerRequest request = context.Request;
+                    // Obtain a response object.
+                    HttpListenerResponse response = context.Response;
+                    // Get user response 
+                    Response userResponse = (GetRoute(request.HttpMethod, request.RawUrl))();
+                    // Set user status code
+                    response.StatusCode = userResponse.GetStatusCode();
+                    // Set user response text
+                    string responseString = userResponse.GetResponseText();
+                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                    // Get a response stream and write the response to it.
+                    response.ContentLength64 = buffer.Length;
+                    System.IO.Stream output = response.OutputStream;
+                    output.Write(buffer, 0, buffer.Length);
+                    // You must close the output stream.
+                    output.Close();
+                });
             }
         }
     }
@@ -98,6 +109,6 @@ public class WebServer
         }
 
         // throw new Exception("404 - not found");
-        return ()=>new Response(404, "<html><body>404</body></html>");
+        return _notFoundCallback;
     }
 }
