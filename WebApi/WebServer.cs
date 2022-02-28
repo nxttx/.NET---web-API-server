@@ -56,41 +56,52 @@ public class WebServer
 
     public void Listen(int port)
     {
-        using (_httpListener = new HttpListener())
+        _httpListener.Prefixes.Add("http://localhost" + ":" + port +"/");
+        _httpListener.Start();
+        Console.WriteLine("Listening...");
+        while (true)
         {
-            _httpListener.Prefixes.Add("http://localhost" + ":" + port +"/");
-            _httpListener.Start();
-            Console.WriteLine("Listening...");
-            while (true)
-            {
-                // Note: The GetContext method blocks while waiting for a request
-                HttpListenerContext context = _httpListener.GetContext();
-                // If connection has been found, set connection on a thread from the thread pool and handle the response. 
-                ThreadPool.QueueUserWorkItem(state => { 
-                    HttpListenerRequest request = context.Request;
-                    // Obtain a response object.
-                    HttpListenerResponse response = context.Response;
-                    // Get user response 
-                    Response userResponse = (GetRoute(request.HttpMethod, request.RawUrl))();
-                    // Set user status code
-                    response.StatusCode = userResponse.GetStatusCode();
-                    // Set user response text
-                    string responseString = userResponse.GetResponseText();
-                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                    // Get a response stream and write the response to it.
-                    response.ContentLength64 = buffer.Length;
-                    System.IO.Stream output = response.OutputStream;
-                    output.Write(buffer, 0, buffer.Length);
-                    // You must close the output stream.
-                    output.Close();
-                });
-            }
+            // Note: The GetContext method blocks while waiting for a request
+            HttpListenerContext context = _httpListener.GetContext();
+            // If connection has been found, set connection on a thread from the thread pool and handle the response. 
+            ThreadPool.QueueUserWorkItem(state => { 
+                HttpListenerRequest request = context.Request;
+                // Obtain a response object.
+                HttpListenerResponse response = context.Response;
+                // Get user response 
+                Response userResponse = (GetRoute(request.HttpMethod, request.RawUrl))();
+                // Set user status code
+                response.StatusCode = userResponse.GetStatusCode();
+                // Set user response text
+                string responseString = userResponse.GetResponseText();
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                // Get a response stream and write the response to it.
+                response.ContentLength64 = buffer.Length;
+                System.IO.Stream output = response.OutputStream;
+                output.Write(buffer, 0, buffer.Length);
+                // You must close the output stream.
+                output.Close();
+            });
         }
     }
 
     public void Stop()
     {
-        throw new NotImplementedException();
+        try
+        {
+            _httpListener.Stop();
+            _httpListener.Close();
+        }
+        catch (NullReferenceException e)
+        {
+            throw new ListenerNotStartedException(
+                "Trying to close the webserver while the webserver is not active.");
+        }
+        catch (Exception e)
+        {
+
+        }
+
     }
 
     public void Start()
