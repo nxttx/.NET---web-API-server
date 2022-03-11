@@ -4,20 +4,20 @@ namespace WebApi;
 
 public class Route
 {
-    private String _slug;
+    private String _path;
     private String _method;
     private Func<Response> _callback;
     
-    public Route(string slug, string method, Func<Response> callback)
+    public Route(string path, string method, Func<Response> callback)
     {
-        this._slug = slug;
+        this._path = path;
         this._method = method;
         this._callback = callback;
     }
 
-    public String GetSlug()
+    public String Getpath()
     {
-        return _slug;
+        return _path;
     }
 
     public string GetMethod()

@@ -3,14 +3,95 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WebApi"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Xtra for .NET" 
+        Height="350" 
+        Width="450"
+        Background="#dcdde1">
+
+    <Grid Margin="4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="9*"/>
-            <ColumnDefinition Width="91*"/>
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <TextBox Grid.Column="0" 
+                     Grid.Row="0" 
+                     Text="Xtra for .NET"
+                     FontWeight="UltraBlack" 
+                     FontFamily="Montserrat"
+                     BorderThickness="0" 
+                     FontSize="35" 
+                     Margin="4" 
+                     Background="#dcdde1"/>
+        </Grid>
+
+        <Grid Grid.Column="0" Grid.Row="1" Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <!-- Table headers -->
+            <TextBox Grid.Column="0" 
+                     Grid.Row="0" 
+                     Margin="4" 
+                     Text="MODULE" 
+                     FontWeight="Bold" 
+                     BorderThickness="0" 
+                     Background="#dcdde1"/>
+            <TextBox Grid.Column="1" 
+                     Grid.Row="0" 
+                     Margin="4" 
+                     Text="PORT" 
+                     FontWeight="Bold" 
+                     BorderThickness="0" 
+                     Background="#dcdde1"/>
+            <TextBox Grid.Column="2" 
+                     Grid.Row="0" 
+                     Margin="4" 
+                     Text="ACTION" 
+                     FontWeight="Bold" 
+                     BorderThickness="0" 
+                     Background="#dcdde1"/>
+            <!-- HTTP server -->
+            <Label Grid.Column="0" 
+                   Grid.Row="1" 
+                   Margin="4" 
+                   Content="HttpServer" 
+                   HorizontalAlignment="Right" />
+
+            <TextBox Grid.Column="1" 
+                     Grid.Row="1" 
+                     Margin="4" 
+                     Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Left"
+                     Width="200" />
+            <Button Grid.Column="2" 
+                    Grid.Row="1" 
+                    Margin="4" 
+                    Content="{Binding ActionButton}" 
+                    HorizontalAlignment="Left"
+                    Width="100"
+                    Click="ActionButton_OnClick"/>
+        </Grid>
         
+        <!-- Logging -->
+        <Grid Grid.Row="2" >
+            <ListBox Height="150" 
+                     ItemsSource="{Binding Log}" 
+                     Margin="4">
+            </ListBox>
+        </Grid>
     </Grid>
+
 </Window>

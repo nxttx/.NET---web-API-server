@@ -7,55 +7,107 @@ namespace WebApi;
 
 public class WebServer
 {
+    private Boolean IsRunning = false;
+    private Action _InitializeComponent;
+    
     private HttpListener _httpListener;
     private List<Route> _routes;
     private Func<Response> _notFoundCallback;
 
+    /// <summary>
+    /// Constructor without interface
+    /// </summary>
     public WebServer()
     {
         _routes = new List<Route>();
         _notFoundCallback = () => new Response(404, "<html><body>404</body></html>");
     }
-
-    public void Get(String slug, Func<Response> callback)
+    
+    /// <summary>
+    /// Constructor with interface
+    /// </summary>
+    /// <param name="_InitializeComponent"></param>
+    public WebServer(Action _InitializeComponent)
     {
-        var route = new Route(slug, "GET", callback);
+        _routes = new List<Route>();
+        _notFoundCallback = () => new Response(404, "<html><body>404</body></html>");
+        this._InitializeComponent = _InitializeComponent;
+    }
+
+    /// <summary>
+    /// Routes HTTP GET requests to the specified path with the specified callback functions.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="callback"></param>
+    public void Get(String path, Func<Response> callback)
+    {
+        var route = new Route(path, "GET", callback);
         _routes.Add(route);
     }
 
-    public void Post(String slug, Func<Response> callback)
+    /// <summary>
+    /// Routes HTTP POST requests to the specified path with the specified callback functions.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="callback"></param>
+    public void Post(String path, Func<Response> callback)
     {
-        var route = new Route(slug, "POST", callback);
+        var route = new Route(path, "POST", callback);
+        _routes.Add(route);
+    }
+    
+    /// <summary>
+    /// Routes HTTP DELETE requests to the specified path with the specified callback functions
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="callback"></param>
+    public void Delete(String path, Func<Response> callback)
+    {
+        var route = new Route(path, "DELETE", callback);
         _routes.Add(route);
     }
 
-    public void Delete(String slug, Func<Response> callback)
+    /// <summary>
+    /// Routes HTTP PUT requests to the specified path with the specified callback functions.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="callback"></param>
+    public void Put(String path, Func<Response> callback)
     {
-        var route = new Route(slug, "DELETE", callback);
+        var route = new Route(path, "PUT", callback);
         _routes.Add(route);
     }
 
-    public void Put(String slug, Func<Response> callback)
+    /// <summary>
+    /// This method is like the standard app.METHOD() methods, except it matches all HTTP verbs.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="callback"></param>
+    public void All(String path, Func<Response> callback)
     {
-        var route = new Route(slug, "PUT", callback);
-        _routes.Add(route);
+        Get(path, callback);
+        Post(path, callback);
+        Delete(path, callback);
+        Put(path, callback);
     }
 
-    public void All(String slug, Func<Response> callback)
-    {
-        Get(slug, callback);
-        Post(slug, callback);
-        Delete(slug, callback);
-        Put(slug, callback);
-    }
-
+    /// <summary>
+    /// Sets the 404 callback
+    /// </summary>
+    /// <param name="notFoundCallback"></param>
     public void NotFound(Func<Response> notFoundCallback)
     {
         _notFoundCallback = notFoundCallback;
     }
 
+    /// <summary>
+    /// Binds and listens for connections on the specified host and port.
+    /// </summary>
+    /// <param name="port"></param>
     public void Listen(int port)
     {
+        IsRunning = true; 
+        _httpListener = new HttpListener();
         _httpListener.Prefixes.Add("http://localhost" + ":" + port +"/");
         _httpListener.Start();
         Console.WriteLine("Listening...");
@@ -85,41 +137,55 @@ public class WebServer
         }
     }
 
-    public void Stop()
+    /// <summary>
+    /// Stops listening to HTTP requests
+    /// </summary>
+    /// <exception cref="ListenerNotStartedException"></exception>
+    public void Close()
     {
         try
         {
             _httpListener.Stop();
             _httpListener.Close();
+            IsRunning = false;
         }
         catch (NullReferenceException e)
         {
             throw new ListenerNotStartedException(
                 "Trying to close the webserver while the webserver is not active.");
         }
+        catch (HttpListenerException e)
+        {
+            
+        }
         catch (Exception e)
         {
-
+            throw;
         }
 
     }
 
+    /// <summary>
+    /// Starts Webserver interface
+    /// </summary>
     public void Start()
     {
-        throw new NotImplementedException();
+        _InitializeComponent();
     }
 
-    private Func<Response> GetRoute(String method, String slug)
+    private Func<Response> GetRoute(String method, String path)
     {
         foreach (var route in _routes)
         {
-            if (route.GetMethod() == method && route.GetSlug() == slug)
+            if (route.GetMethod() == method && route.Getpath() == path)
             {
                 return route.GetCallback();
             }
         }
-
-        // throw new Exception("404 - not found");
+        
         return _notFoundCallback;
     }
+
+    public Boolean GetIsRunning() { return IsRunning; }
+
 }
