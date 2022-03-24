@@ -127,7 +127,7 @@ public class WebServer
                 HttpListenerResponse response = context.Response;
                 
                 // Split url for var and raw path;
-                String[] splitUrl = request.RawUrl?.Split("?");
+                String[] splitUrl = request.RawUrl!.Split("?");
                 String path = splitUrl[0];
                 // Create get parameters
                 String[,] getParameters = new String[0,0];
@@ -171,20 +171,15 @@ public class WebServer
             _httpListener.Close();
             _isRunning = false;
         }
-        catch (NullReferenceException e)
+        catch (NullReferenceException)
         {
             throw new ListenerNotStartedException(
                 "Trying to close the webserver while the webserver is not active.");
         }
-        catch (HttpListenerException e)
+        catch (HttpListenerException)
         {
             
         }
-        catch (Exception e)
-        {
-            throw;
-        }
-
     }
 
     /// <summary>
@@ -224,7 +219,7 @@ public class WebServer
         {
             return scoreQuery.First();
         }
-        catch (InvalidOperationException e)
+        catch (InvalidOperationException)
         {
             return _notFoundCallback;
         }

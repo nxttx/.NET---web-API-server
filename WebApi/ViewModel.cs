@@ -1,8 +1,6 @@
 ﻿// INotifyPropertyChanged notifies the View of property changes, so that Bindings are updated.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
