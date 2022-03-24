@@ -4,21 +4,21 @@ namespace WebApi;
 
 public class Response
 {
-    private int _StatusCode;
-    private String _ResponseText;
+    private int _statusCode;
+    private String _responseText;
 
     public Response(int statusCode, string responseText)
     {
-        _StatusCode = statusCode;
-        _ResponseText = responseText;
+        _statusCode = statusCode;
+        _responseText = responseText;
     }
 
     public int GetStatusCode()
     {
-        return _StatusCode;
+        return _statusCode;
     }
     public String GetResponseText()
     {
-        return _ResponseText;
+        return _responseText;
     }
 }

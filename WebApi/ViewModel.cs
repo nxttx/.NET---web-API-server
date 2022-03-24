@@ -8,16 +8,16 @@ using System.ComponentModel;
 
 sealed class MyViewModel : INotifyPropertyChanged
 {
-    private String ActionButtonValue = "StartServer";
-    private String PortValue = "8080";
-    private ObservableCollection<String> LogValue =new();
+    private String _actionButtonValue = "StartServer";
+    private String _portValue = "8080";
+    private ObservableCollection<String> _logValue =new();
     
     public string ActionButton
     {
-        get { return ActionButtonValue; } 
+        get { return _actionButtonValue; } 
         set {
-            if(ActionButtonValue != value) {
-                ActionButtonValue = value;
+            if(_actionButtonValue != value) {
+                _actionButtonValue = value;
                 OnPropertyChange("ActionButton");
             }
         }
@@ -25,13 +25,13 @@ sealed class MyViewModel : INotifyPropertyChanged
 
     public string Port
     {
-        get { return PortValue; }
+        get { return _portValue; }
         set
         {
             int ignoreMe;
-            if (PortValue != value && (int.TryParse(value, out ignoreMe)))
+            if (_portValue != value && (int.TryParse(value, out ignoreMe)))
             {
-                PortValue = value;
+                _portValue = value;
                 OnPropertyChange("Port");
             }
         }
@@ -39,17 +39,17 @@ sealed class MyViewModel : INotifyPropertyChanged
     
     public ObservableCollection<String> Log
     {
-        get { return LogValue; } 
+        get { return _logValue; } 
         set
         {
-            LogValue = value;
+            _logValue = value;
             OnPropertyChange("Log");
         }
     }
 
     public void AddToLog(String value)
     {
-        LogValue.Insert(0, value);
+        _logValue.Insert(0, value);
         OnPropertyChange("Log");
     }
 
