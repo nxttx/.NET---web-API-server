@@ -18,8 +18,8 @@ namespace WebApi
 
         public MainWindow()
         {
-            // webServer = new WebServer(InitializeComponent);
-            // webServer.Start();
+            webServer = new WebServer(InitializeComponent);
+            webServer.Start();
             webServer = new WebServer();
             
             webServer.Get("/helloworld", (parameters) =>
@@ -43,7 +43,7 @@ namespace WebApi
 
             });
             
-            webServer.Listen(8080);
+            // webServer.Listen(8080);
 
         }
     }
