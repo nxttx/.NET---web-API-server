@@ -3,13 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:global="clr-namespace:"
         mc:Ignorable="d"
         Title="Xtra for .NET" 
         Height="350" 
         Width="450"
         Background="#dcdde1">
-
-    <Grid Margin="4">
+    <Window.Resources>
+        <global:MyViewModel x:Key="viewModel" />
+    </Window.Resources>
+    
+    
+    <Grid Margin="4" DataContext="{StaticResource viewModel}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
@@ -82,7 +87,10 @@
                     Content="{Binding ActionButton}" 
                     HorizontalAlignment="Left"
                     Width="100"
-                    Click="ActionButton_OnClick"/>
+                    Command="{Binding StartStopCommand}"
+            />
+            <!-- Click="ActionButton_OnClick" -->
+
         </Grid>
         
         <!-- Logging -->

@@ -14,28 +14,25 @@ namespace WebApi
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MyViewModel _viewModel;
-        private WebServer _webServer;
+        public static WebServer webServer;
 
         public MainWindow()
         {
-            _viewModel = new MyViewModel();
-            DataContext = _viewModel;
-            
-            _webServer = new WebServer(InitializeComponent);
+            // webServer = new WebServer(InitializeComponent);
             // webServer.Start();
+            webServer = new WebServer();
             
-            _webServer.Get("/helloworld", (parameters) =>
+            webServer.Get("/helloworld", (parameters) =>
             {
                 return new Response(200, "<HTML><BODY> Hello world!</BODY></HTML>");
             });
             
-            _webServer.Get("/gebruiker", (parameters) =>
+            webServer.Get("/gebruiker", (parameters) =>
             {
                 return new Response(200, "<HTML><BODY> <h1>Hoi Gebruiker</h1><h2>Hoe is het met je vandaag?</h2></BODY></HTML>");
             });
             
-            _webServer.All("/all", (request) =>
+            webServer.All("/all", (request) =>
             {
                 var stringbuilder = new StringBuilder(500);
                 foreach (var parameter in request.Parameters)
@@ -46,23 +43,8 @@ namespace WebApi
 
             });
             
-            _webServer.Listen(8080);
+            webServer.Listen(8080);
 
-        }
-        private void ActionButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (!_webServer.GetIsRunning())
-            {
-                Task.Run(() => _webServer.Listen(int.Parse(_viewModel.Port)));
-                _viewModel.ActionButton = "Stop Server";
-                _viewModel.AddToLog("Server started on :"+ _viewModel.Port);
-            }
-            else
-            {
-                _webServer.Close();
-                _viewModel.ActionButton = "Start Server";
-                _viewModel.AddToLog("Server stopped");
-            }
         }
     }
 }
