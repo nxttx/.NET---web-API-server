@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-// todo: Test stop() if webserver is listening 
-// todo: Test starting two servers
+// todo: Verkeerde 'url.nl?java&' parameters zorgen voor een crash van het systeem.
+// todo: validate data, (misschien regex? check in.. of elke key wel een value heeft)
 namespace WebApi
 {
     /// <summary>
@@ -20,7 +20,7 @@ namespace WebApi
         {
             webServer = new WebServer(InitializeComponent);
             webServer.Start();
-            webServer = new WebServer();
+            // webServer = new WebServer();
             
             webServer.Get("/helloworld", (parameters) =>
             {
